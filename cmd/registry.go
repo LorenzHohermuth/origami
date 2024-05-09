@@ -27,7 +27,7 @@ var registryCmd = &cobra.Command{
 		tw := new(tabwriter.Writer)
 		tw.Init(os.Stdout, 0, 8, 0, '\t', 0)
 		for v, k := range tr.Map {
-			fmt.Fprintf(tw, "value: %s \t key: %b \n", v, k)
+			fmt.Fprintf(tw, "value: \"%s\" \t key: %b \n", v, k)
 		}
 		tw.Flush()
 	},

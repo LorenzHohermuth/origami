@@ -6,10 +6,7 @@ import (
 	"strings"
 )
 
-func SplitFile(path string) [][]string {
-	if path == "" {
-		return make([][]string, 0)
-	}
+func SplitFile(path string) RegistryEntry {
 	info, err := os.Stat(path)
 	if err != nil {
 		panic(err)
@@ -17,18 +14,26 @@ func SplitFile(path string) [][]string {
 
 	if info.IsDir() {
 		paths := getFilePathsFromDir(path)
-		matrix := make([][]string, len(paths))
+		arr := make([]RegistryEntry, len(paths))
+
 		for _, filePath := range paths {
-			matrix = addToMatrix(matrix, SplitFile(filePath))
+			if filePath != "" {
+				arr = append(arr, SplitFile(filePath))
+			}
 		}
-		return matrix
+		return RegistryEntry{
+			Name: info.Name(), 
+			Tokens: nil,
+			ChildEntrys: arr,
+		}
 	} else {
-		matrix := make([][]string, 1)
-		matrix[0] = tokenize(getFileContent(path))
-		return matrix
+		return RegistryEntry{
+			Name: info.Name(),
+			Tokens: tokenize(getFileContent(path)),
+			ChildEntrys: nil,
+		}
 	}
 }
-
 
 func getFileContent(path string) string{
 	data, err := os.ReadFile(path)

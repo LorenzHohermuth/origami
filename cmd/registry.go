@@ -20,14 +20,15 @@ var registryCmd = &cobra.Command{
 	Long: `Distributes tokens from a file or a direcotry
 	into a HashMap and prints the Map`,
 	Run: func(cmd *cobra.Command, args []string) {
-		tokens := splitter.SplitFile(args[0])
+		entrys := splitter.SplitFile(args[0])
 		tr := registry.TokenRegistry{ Map: make(map[string]int64)}
-		tr.DistributeTokens(tokens)
+
+		tr.DistributeTokens(entrys.CreateMatrix())
 
 		tw := new(tabwriter.Writer)
 		tw.Init(os.Stdout, 0, 8, 0, '\t', 0)
 		for v, k := range tr.Map {
-			fmt.Fprintf(tw, "value: \"%s\" \t key: %b \n", v, k)
+			fmt.Fprintf(tw, "value: \"%s\" \t key: %d \n", v, k)
 		}
 		tw.Flush()
 	},

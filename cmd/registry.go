@@ -4,12 +4,14 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"os"
+	"strconv"
 	"text/tabwriter"
+	"unicode/utf8"
 
 	"github.com/LorenzHohermuth/origami/internal/registry"
 	"github.com/LorenzHohermuth/origami/internal/splitter"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -27,8 +29,17 @@ var registryCmd = &cobra.Command{
 
 		tw := new(tabwriter.Writer)
 		tw.Init(os.Stdout, 0, 8, 0, '\t', 0)
+
+		red := color.New(color.FgRed)
+		green := color.New(color.FgGreen)
+		formatterString := "value: \"%s\" key: %." + strconv.Itoa(tr.BitLength) + "b \n"
+
 		for v, k := range tr.Map {
-			fmt.Fprintf(tw, "value: \"%s\" \t key: %d \n", v, k)
+			if utf8.RuneCountInString(binary(v)) < tr.BitLength {
+				red.Fprintf(tw, formatterString, v, k)
+			} else {
+				green.Fprintf(tw, formatterString, v, k)
+			}
 		}
 		tw.Flush()
 	},
